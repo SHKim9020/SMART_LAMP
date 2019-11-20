@@ -1,0 +1,274 @@
+{	
+	"extensionName": "Onecoding_neopixel_DHT_bluetooth_LCD",
+	"description": "Onecoding library using neopixel,DHT,bluetooth,I2C_LCD using Kyung Man Shin(tlsrudak@naver.com)(neopixel), Bora KARAKU?(borakarakus85@gmail.com)(dht), Erdal Delebe(erdaldelebe123@gmail.com)(bluetooth)",
+	"version": "1.9.5",
+	"author": "Kim Seung Hoon(pcs0879@nate.com)",
+	"homepage": "http://onecoding.co.kr",
+	"sort":0,
+	"javascriptURL":"js/demo.js",
+  	"firmware":"1.0",
+  	"extensionPort":0,
+	"tags" : "Onecoding, NeoPixel, DHT, bluetooth,LCD",
+
+
+	"blockSpecs": [
+
+		["w", "네오픽셀 초기화 : %n 핀에 %n 개 연결 ","initNeoPixel", "4", "8",
+			{"encode":"{d0}{d1}",
+					"inc":"#include \"NeoPixel.h\"\n\n",
+					"def":"Adafruit_NeoPixel strip = Adafruit_NeoPixel({1}, {0}, NEO_GRB + NEO_KHZ800);\n\n",
+					"setup":"strip.begin(); \n",
+					"work":"",
+					"loop":""
+			}
+		],
+
+		["w", "네오픽셀 출력 :  %n 번 픽셀 R%d.rvalue G%d.gvalue B%d.bvalue","runNeoPixel", "0", 0, 0, 0,
+			{"encode":"{d0}{d1}{d2}{d3}",
+					"inc":"",
+					"def":"",
+					"setup":"",
+					"work":"strip.setPixelColor({0}, {1}, {2}, {3});\nstrip.show();\n",
+					"loop":""
+			}
+		], 
+				
+		[ //DHT sensor library
+			"w",
+			"DHT No %n , Pin %d.digital , Version %d.DHT ",
+			"DHT sensor begin",
+			"1",
+			"5",
+			"DHT22",
+			{
+				"setup": "",
+				"inc": "#include \"DHT.h\"\n",
+				"def": "DHT dht_{0}({1},{2});\n",
+				"work": "",
+				"loop": ""
+			}
+		],
+		[
+			"r",
+			"DHT No %n , Temperature",
+			"DHT sensor get Temperature",
+			"1",
+			{
+				"setup": "",
+				"inc": "",
+				"def": "",
+				"work": "dht_{0}.readTemperature()",
+				"loop": ""
+			}
+		],
+		[
+			"r",
+			"DHT No %n , Humidity",
+			"DHT sensor get Humidity",
+			"1",
+			{
+				"setup": "",
+				"inc": "",
+				"def": "",
+				"work": "dht_{0}.readHumidity()",
+				"loop": ""
+			}
+		],
+		["w", "블루투스 핀 설정 송신 %n 수신 %n","bluetooth_init", "2", "3",
+		{"encode":"{d0}{d1}","setup":"BlueTooth.begin(9600);\n","inc":"SoftwareSerial BlueTooth({0},{1});\n","def":"","work":"","loop":""}],
+		
+		[
+			"w", 
+			"Bluetooth_blue_input=BlueTooth.read()",
+			"Bluetooth_blue_input", 
+			"",
+			{
+				"setup":"",
+				"inc":"",
+				"def":"char blue_input = 0;\n",
+				"work":"blue_input=BlueTooth.read();\n",
+				"loop":""
+			}
+		],
+		
+		[
+			"w", 
+			"Bluetooth_blue_input=Serial.read()",
+			"Bluetooth_Serial_input", 
+			"",
+			{
+				"setup":"",
+				"inc":"",
+				"def":"char blue_input = 0;\n",
+				"work":"blue_input=Serial.read();\n",
+				"loop":""
+			}
+		],
+
+		[	
+			"R",
+			"blue_input",
+			"blue_input",
+			{
+				"setup":"",
+				"inc":"",
+				"def":"",
+				"work":"blue_input",
+				"loop":""
+			}
+		],
+
+		["B", "블루투스 수신이 가능하면", "bluetoothAvailable", 
+		{ "setup":"","inc":"","def":"","work":"BlueTooth.available()","loop":""}],
+
+		["R", "블루투스 수신 데이터", "bluetoothRead", 
+		{ "setup":"","inc":"","def":"","work":"BlueTooth.read()","loop":""}],
+
+		["w", "블루투스 송신 데이터 %s", "bluetoothWrite", "hello",
+		{"setup":"","inc":"","def":"","work":"BlueTooth.write({0});\n","loop":""}],		
+		
+		["B", "serial available bytes", "serialAvailable",
+		{"setup":"Serial.begin(9600);\n","inc":"","def":"","work":"Serial.available()","loop":""}],
+		
+		["w", "시리얼 송신 데이터 %s", "SerialWrite", "hello",
+		{"setup":"Serial.begin(9600);\n","inc":"","def":"","work":"Serial.write({0});\n","loop":""}],			
+		
+		["R", "시리얼 수신 데이터", "SerialRead",
+		{"setup":"Serial.begin(9600);\n","inc":"","def":"","work":"Serial.read()","loop":""}],
+	
+		[
+			"w", 
+			" %n = parseInt",
+			"parseInt",
+			"0",
+			{
+				"setup":"",
+				"inc":"",
+				"def":"",
+				"work":"{0} = bluetooth.parseInt();\n",
+				"loop":""
+			}
+		],
+		
+		[
+			"w",
+			"Set: LCD at %d.lcdaddr has %d.lines lines and %d.cols characters per line",
+			"LCDI2Cbegin",
+			"0x27",
+			2,
+			16,
+			{
+				"setup":"lcd_I2C_{0}.init();\nlcd_I2C_{0}.backlight();\n",
+				"inc":"#include \"LiquidCrystal_I2C.h\"\n",
+				"def":"LiquidCrystal_I2C lcd_I2C_{0}({0}, 16, 2);\n",
+				"work":"",
+				"loop":""
+			}
+		],
+		[
+			"w",
+			"LCD at %d.lcdaddr Line %d.line Col %d.col Show %s ",
+			"LCDI2CPrint",
+			"0x27",
+			1,
+			1,
+			"Hello World!",
+			{
+				"setup":"",
+				"inc":"#include \"LiquidCrystal_I2C.h\"\n",
+				"def":"LiquidCrystal_I2C lcd_I2C_{0}({0}, 16, 2);\n",
+				"work":"lcd_I2C_{0}.setCursor( ({2}) - 1, ({1}) - 1 );\nlcd_I2C_{0}.print( {3} );\n",
+				"loop":""
+			}
+		],
+		[
+			"w",
+			"Clear LCD at %d.lcdaddr and Line %d.line Col %d.col Show %s ",
+			"LCDI2CClearandPrint",
+			"0x27",
+			1,
+			1,
+			"Hello World!",
+			{
+				"setup":"",
+				"inc":"#include \"LiquidCrystal_I2C.h\"\n",
+				"def":"LiquidCrystal_I2C lcd_I2C_{0}({0}, 16, 2);\n",
+				"work":"lcd_I2C_{0}.clear();\nlcd_I2C_{0}.setCursor( ({2}) - 1, ({1}) - 1 );\nlcd_I2C_{0}.print( {3} );\n",
+				"loop":""
+			}
+		],
+		[
+			"w",
+			"Turn %d.switch the backlight of LCD at %d.lcdaddr",
+			"LCDI2CBacklight",
+			"ON",
+			"0x27",
+			{
+				"setup":"",
+				"inc":"#include \"LiquidCrystal_I2C.h\"\n",
+				"def":"LiquidCrystal_I2C lcd_I2C_{1}({1}, 16, 2);\n",
+				"work":"lcd_I2C_{1}.setBacklight( {0} );\n",
+				"loop":""
+			}
+		],
+		[
+			"w",
+			"Clear LCD at %d.lcdaddr",
+			"LCDI2CClear",
+			"0x27",
+			{
+				"setup":"",
+				"inc":"#include \"LiquidCrystal_I2C.h\"\n",
+				"def":"LiquidCrystal_I2C lcd_I2C_{0}({0}, 16, 2);\n",
+				"work":"lcd_I2C_{0}.clear();\n",
+				"loop":""
+			}
+		],
+		[
+			"w",
+			"LCD at %d.lcdaddr %d.indicator",
+			"LCDI2CIndicator",
+			"0x27",
+			"show cursor",
+			{
+				"setup":"",
+				"inc":"#include \"LiquidCrystal_I2C.h\"\n",
+				"def":"LiquidCrystal_I2C lcd_I2C_{0}({0}, 16, 2);\nvoid setLCDindicator(LiquidCrystal_I2C *pLCD, int indstate){\nif (indstate==1) pLCD->cursor();\nelse if (indstate==2) pLCD->noCursor();\nelse if (indstate==3) pLCD->blink();\nelse if (indstate==4) pLCD->noBlink();\n}",
+				"work":"setLCDindicator(&lcd_I2C_{0}, {1} );\n",
+				"loop":""
+			}
+		],
+
+	  
+	],
+	"menus": {
+		"rvalue":["0","50","100","150","255"],
+		"gvalue":["0","50","100","150","255"],
+		"bvalue":["0","50","100","150","255"],
+		"digital":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+		"analog":[0,1,2,3,4,5,6,7],
+		"DHT":["DHT11","DHT21","DHT22"],
+		"switch":["ON","OFF"],
+		"indicator":["show cursor","hide cursor","show blink","hide blink"],
+		"lines":[2,4],
+		"cols":[16,20],
+		"line":[1,2,3,4],
+		"col":[1,2,4,8,12,16,20],
+		"lcdaddr":["0x27","0x30","0x38","0x20","0x3F"],
+	},
+	"values":{
+		"DHT11": 11,
+		"DHT21": 21,
+		"DHT22": 22,
+		"ON":1,
+		"OFF":0,
+		"show cursor":1,
+		"hide cursor":2,
+		"show blink":3,
+		"hide blink":4,
+		
+	},
+	"translators":{
+		
+	}
+}
